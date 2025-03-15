@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tìm kiếm sản phẩm</title>
+  <style>
+    body { font-family: Arial; padding: 40px; background-color: #f9f9f9; }
+    h1 { color: #333; }
+    form { margin-bottom: 20px; }
+    input[type="text"] {
+      padding: 10px; width: 300px; font-size: 16px;
+    }
+    button {
+      padding: 10px 15px; font-size: 16px;
+      background-color: #007bff; color: white; border: none; cursor: pointer;
+    }
+    button:hover { background-color: #0056b3; }
+    .result { margin-top: 20px; }
+    .product {
+      background: white; padding: 15px; margin-bottom: 10px;
+      border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .product h3 { margin: 0 0 5px 0; }
+    .product p { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h1>Tìm kiếm sản phẩm</h1>
+  <form id="searchForm">
+    <input type="text" id="searchInput" placeholder="Nhập tên sản phẩm...">
+    <button type="submit">Tìm kiếm</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const form = document.getElementById('searchForm');
+    const resultBox = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const keyword = document.getElementById('searchInput').value.trim();
+
+      const url = `http://localhost:5000/api/products/search?name=${encodeURIComponent(keyword)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      resultBox.innerHTML = '';
+
+      if (data.length === 0) {
+        resultBox.innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
+        return;
+      }
+
+      data.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <h3>${product.name}</h3>
+          <p><strong>Giá:</strong> ${product.price} VNĐ</p>
+          <p><strong>Mô tả:</strong> ${product.description || 'Không có mô tả'}</p>
+        `;
+        resultBox.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>
