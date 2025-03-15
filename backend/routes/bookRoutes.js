@@ -6,7 +6,7 @@ const Book = require('../models/book');
 router.post('/add', async (req, res) => {
     try {
         const { title, author, description, publishedYear } = req.body;
-        if (!title || !author || !year) {
+        if (!title || !author || !publishedYear) {
             return res.status(400).json({ message: 'Tiêu đề và tác giả và năm xuất bản là bắt buộc là bắt buộc' });
         }
 
@@ -45,7 +45,7 @@ router.put('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Không tìm thấy sách để cập nhật.' });
         }
 
-        res.json({ message: '✅ Cập nhật thành công!', book: updatedBook });
+        res.json({ message: 'Cập nhật thành công!', book: updateBook });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -73,6 +73,22 @@ router.get('/', async (req, res) => {
         res.json(books);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const book = await Book.findById(id);
+
+        if (!book) {
+            return res.status(404).json({ message: 'Không tìm thấy sách' });
+        }
+
+        res.json(book);
+    } catch (error) {
+        console.error('Lỗi lấy thông tin sách:', error.message);
+        res.status(500).json({ message: 'Lỗi máy chủ' });
     }
 });
 
